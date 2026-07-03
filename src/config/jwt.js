@@ -11,8 +11,8 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 if (!JWT_EXPIRES_IN) {
     throw new Error('JWT_EXPIRES_IN não está definida no .env');
 }
-export function signToken(payload) {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN, algorithm: 'HS256' });
+export function signToken(payload, expiresIn = JWT_EXPIRES_IN) {
+    return jwt.sign(payload, JWT_SECRET, { expiresIn, algorithm: 'HS256' });
 }
 
 export function verifyToken(token) {
