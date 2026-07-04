@@ -5,4 +5,4 @@ node_modules
 .claude
 src/logs/
 *.log
-/src/generated/prisma
+uploads/

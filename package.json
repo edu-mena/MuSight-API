@@ -47,10 +47,13 @@
         "cors": "^2.8.6",
         "dotenv": "^17.4.2",
         "express": "^5.2.1",
+        "express-rate-limit": "^8.5.2",
+        "file-type": "^22.0.1",
         "helmet": "^8.2.0",
         "jsonwebtoken": "^9.0.3",
         "mariadb": "^3.5.3",
         "morgan": "^1.11.0",
+        "multer": "^2.2.0",
         "nodemailer": "^9.0.3",
         "winston": "^3.19.0",
         "zod": "^4.4.3"

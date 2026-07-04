@@ -8,17 +8,176 @@ datasource db {
 
 enum Role {
   user
+  researcher
+  expert
   admin
 }
 
-model User {
-  id           Int      @id @default(autoincrement())
-  name         String
-  email        String   @unique
-  passwordHash String
-  role         Role     @default(user)
-  verified     Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+enum ExpertiseLevel {
+  basico
+  intermedio
+  avancado
+}
 
+enum ContentStatus {
+  rascunho
+  em_revisao
+  publicado
+  recusado
+}
+
+enum Stance {
+  favor
+  neutro
+  contra
+}
+
+model User {
+  id                   Int      @id @default(autoincrement())
+  name                 String
+  email                String   @unique
+  passwordHash         String
+  role                 Role     @default(user)
+  verified             Boolean  @default(false)
+  suspended            Boolean  @default(false)
+  avatar               String?
+  bio                  String?  @db.Text
+  academicLevel        String?
+  academicArea         String?
+  institution          String?
+  profession           String?
+  organization         String?
+  website              String?
+  linkedin             String?
+  appliedForResearcher Boolean  @default(false)
+  researcherFocusArea  String?
+  researcherMotivation String?  @db.Text
+  portfolioUrl         String?
+  contributions        Int      @default(0)
+  debatesCount         Int      @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  expertise    UserExpertise[]
+  articles     Article[]
+  debates      Debate[]
+  comments     Comment[]
+  commentLikes CommentLike[]
+}
+
+model UserExpertise {
+  id     Int            @id @default(autoincrement())
+  userId Int
+  topic  String
+  level  ExpertiseLevel @default(basico)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Article {
+  id              Int           @id @default(autoincrement())
+  authorId        Int
+  title           String
+  category        String
+  excerpt         String?
+  articleDate     DateTime?
+  status          ContentStatus @default(rascunho)
+  rejectionReason String?
+  hasAudio        Boolean       @default(false)
+  audioDuration   String?
+  audioSrc        String?
+  image           String?
+  views           Int           @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  author     User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  levels     ArticleLevel[]
+  keyTerms   ArticleKeyTerm[]
+  references ArticleReference[]
+}
+
+model ArticleLevel {
+  id        Int            @id @default(autoincrement())
+  articleId Int
+  level     ExpertiseLevel
+  label     String
+  sublabel  String?
+  content   String         @db.LongText
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, level])
+}
+
+model ArticleKeyTerm {
+  id         Int    @id @default(autoincrement())
+  articleId  Int
+  term       String
+  definition String @db.Text
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}
+
+model ArticleReference {
+  id        Int     @id @default(autoincrement())
+  articleId Int
+  label     String
+  url       String?
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}
+
+model Debate {
+  id              Int           @id @default(autoincrement())
+  authorId        Int
+  title           String
+  category        String
+  summary         String
+  stance          Stance        @default(neutro)
+  initialArgument String?
+  status          ContentStatus @default(em_revisao)
+  rejectionReason String?
+  participants    Int           @default(0)
+  expertsCount    Int           @default(0)
+  hot             Boolean       @default(false)
+  debateDate      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  author         User                  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  invitedExperts DebateInvitedExpert[]
+  comments       Comment[]
+}
+
+model DebateInvitedExpert {
+  id       Int    @id @default(autoincrement())
+  debateId Int
+  name     String
+
+  debate Debate @relation(fields: [debateId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  debateId  Int
+  userId    Int
+  content   String   @db.Text
+  side      Stance   @default(neutro)
+  likes     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  debate  Debate        @relation(fields: [debateId], references: [id], onDelete: Cascade)
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likedBy CommentLike[]
+}
+
+model CommentLike {
+  userId    Int
+  commentId Int
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@id([userId, commentId])
 }

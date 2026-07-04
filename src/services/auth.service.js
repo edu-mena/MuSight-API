@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import prisma from '#config/prisma.js';
 import { signToken, verifyToken } from '#config/jwt.js';
 import { sendMail } from '#config/mailer.js';
+import { toSafeUser } from '#utils/serializeUser.js';
 
 const SALT_ROUNDS = 12;
 
@@ -11,11 +12,6 @@ export function hashPassword(plain) {
 
 export function comparePassword(plain, hash) {
     return bcrypt.compare(plain, hash);
-}
-
-function toSafeUser(user) {
-    const { passwordHash, ...safeUser } = user;
-    return safeUser;
 }
 
 function businessError(message, statusCode) {

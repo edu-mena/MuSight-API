@@ -11,7 +11,7 @@ function cookieOptions(token) {
     return {
         httpOnly: true,
         secure: isProduction,
-        sameSite: 'lax',
+        sameSite: isProduction ? 'none' : 'lax',
         maxAge,
     };
 }
