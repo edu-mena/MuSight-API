@@ -5,6 +5,10 @@ vi.mock('#config/prisma.js', () => ({
         $transaction: vi.fn((callback) => callback(prismaMockForTx)),
         user: {
             update: vi.fn(),
+            findUnique: vi.fn(),
+            findMany: vi.fn(),
+            count: vi.fn(),
+            delete: vi.fn(),
         },
         userExpertise: {
             deleteMany: vi.fn(),
@@ -15,10 +19,12 @@ vi.mock('#config/prisma.js', () => ({
 
 const prisma = (await import('#config/prisma.js')).default;
 const prismaMockForTx = prisma;
-const { updateProfile, applyResearcher } = await import('./user.service.js');
+const { updateProfile, applyResearcher, listUsersForAdmin, updateUserAsAdmin, deleteUserAsAdmin } =
+    await import('./user.service.js');
 
 beforeEach(() => {
     vi.clearAllMocks();
+    prisma.user.count.mockResolvedValue(0);
 });
 
 describe('updateProfile', () => {
@@ -106,5 +112,84 @@ describe('applyResearcher', () => {
             },
         });
         expect(result).not.toHaveProperty('passwordHash');
+    });
+});
+
+describe('listUsersForAdmin', () => {
+    it('nunca devolve passwordHash', async () => {
+        prisma.user.findMany.mockResolvedValue([{ id: 1, name: 'A', passwordHash: 'hash' }]);
+
+        const result = await listUsersForAdmin({ page: 1, limit: 20 });
+
+        expect(result.users[0]).not.toHaveProperty('passwordHash');
+    });
+
+    it('constrói o filtro OR de pesquisa quando "search" é enviado', async () => {
+        prisma.user.findMany.mockResolvedValue([]);
+
+        await listUsersForAdmin({ search: 'eduardo', page: 1, limit: 20 });
+
+        expect(prisma.user.findMany).toHaveBeenCalledWith(
+            expect.objectContaining({
+                where: {
+                    OR: [{ name: { contains: 'eduardo' } }, { email: { contains: 'eduardo' } }],
+                },
+            })
+        );
+    });
+});
+
+describe('updateUserAsAdmin', () => {
+    it('lança 404 se o utilizador não existir', async () => {
+        prisma.user.findUnique.mockResolvedValue(null);
+
+        await expect(updateUserAsAdmin(1, { verified: true })).rejects.toMatchObject({
+            statusCode: 404,
+        });
+    });
+
+    it('ao aprovar como researcher, limpa appliedForResearcher automaticamente', async () => {
+        prisma.user.findUnique.mockResolvedValue({ id: 1, role: 'user' });
+        prisma.user.update.mockResolvedValue({ id: 1, role: 'researcher', passwordHash: 'hash' });
+
+        await updateUserAsAdmin(1, { role: 'researcher' });
+
+        expect(prisma.user.update).toHaveBeenCalledWith({
+            where: { id: 1 },
+            data: { role: 'researcher', appliedForResearcher: false },
+        });
+    });
+
+    it('não sobrepõe appliedForResearcher se vier explícito no pedido', async () => {
+        prisma.user.findUnique.mockResolvedValue({ id: 1, role: 'user' });
+        prisma.user.update.mockResolvedValue({ id: 1, role: 'researcher', passwordHash: 'hash' });
+
+        await updateUserAsAdmin(1, { role: 'researcher', appliedForResearcher: true });
+
+        expect(prisma.user.update).toHaveBeenCalledWith({
+            where: { id: 1 },
+            data: { role: 'researcher', appliedForResearcher: true },
+        });
+    });
+});
+
+describe('deleteUserAsAdmin', () => {
+    it('lança 400 se o admin tentar apagar a própria conta', async () => {
+        await expect(deleteUserAsAdmin(1, 1)).rejects.toMatchObject({ statusCode: 400 });
+        expect(prisma.user.delete).not.toHaveBeenCalled();
+    });
+
+    it('lança 404 se o utilizador alvo não existir', async () => {
+        prisma.user.findUnique.mockResolvedValue(null);
+
+        await expect(deleteUserAsAdmin(1, 2)).rejects.toMatchObject({ statusCode: 404 });
+    });
+
+    it('apaga o utilizador alvo quando é válido', async () => {
+        prisma.user.findUnique.mockResolvedValue({ id: 2 });
+
+        await deleteUserAsAdmin(1, 2);
+
+        expect(prisma.user.delete).toHaveBeenCalledWith({ where: { id: 2 } });
     });
 });

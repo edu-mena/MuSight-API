@@ -21,6 +21,7 @@
         "prisma:generate": "prisma generate",
         "prisma:migrate": "prisma migrate dev",
         "prisma:studio": "prisma studio",
+        "prisma:seed": "prisma db seed",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "format": "prettier --write .",
@@ -40,6 +41,7 @@
     },
     "homepage": "https://github.com/edu-mena/MuSight-API#readme",
     "dependencies": {
+        "@google/genai": "^2.10.0",
         "@prisma/adapter-mariadb": "^7.8.0",
         "@prisma/client": "^7.8.0",
         "bcryptjs": "^3.0.3",

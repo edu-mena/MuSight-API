@@ -63,6 +63,7 @@ model User {
   debates      Debate[]
   comments     Comment[]
   commentLikes CommentLike[]
+  wezaMessages WezaMessage[]
 }
 
 model UserExpertise {
@@ -180,4 +181,14 @@ model CommentLike {
   comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
   @@id([userId, commentId])
+}
+
+model WezaMessage {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  question  String   @db.Text
+  answer    String   @db.Text
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

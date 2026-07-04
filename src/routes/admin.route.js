@@ -7,10 +7,17 @@ import { requireAdmin } from '#middlewares/requireRole.middleware.js';
 import { adminListArticlesQuerySchema } from '#validations/article.validations.js';
 import { adminListDebatesQuerySchema } from '#validations/debate.validations.js';
 import { rejectionSchema } from '#validations/common.validations.js';
+import { adminListUsersQuerySchema, adminUpdateUserSchema } from '#validations/user.validations.js';
 
 const router = Router();
 
 router.use(requireAuth, requireAdmin);
+
+router.get('/stats', adminController.getStats);
+
+router.get('/users', validate(adminListUsersQuerySchema, 'query'), adminController.listUsers);
+router.put('/users/:id', parseIdParam, validate(adminUpdateUserSchema), adminController.updateUser);
+router.delete('/users/:id', parseIdParam, adminController.deleteUser);
 
 router.get(
     '/articles',

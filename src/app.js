@@ -13,6 +13,7 @@ import debateRouter from '#routes/debate.route.js';
 import researcherDebateRouter from '#routes/researcherDebate.route.js';
 import commentRouter from '#routes/comment.route.js';
 import adminRouter from '#routes/admin.route.js';
+import wezaRouter from '#routes/weza.route.js';
 import { errorHandler } from '#middlewares/errorHandler.middleware.js';
 import { corsOptions } from '#config/cors.js';
 
@@ -46,6 +47,7 @@ app.use('/debates', debateRouter);
 app.use('/researcher/debates', researcherDebateRouter);
 app.use('/comments', commentRouter);
 app.use('/admin', adminRouter);
+app.use('/weza', wezaRouter);
 
 app.use((req, res) => {
     res.status(404).json({ success: false, error: 'Rota não encontrada', code: 404 });

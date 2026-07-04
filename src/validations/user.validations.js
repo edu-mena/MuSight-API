@@ -27,3 +27,23 @@ export const applyResearcherSchema = z.object({
     motivation: z.string().min(20, 'A motivação deve ter pelo menos 20 caracteres'),
     portfolioUrl: z.url('URL inválido').optional(),
 });
+
+export const adminListUsersQuerySchema = z.object({
+    role: z.enum(['user', 'researcher', 'expert', 'admin']).optional(),
+    suspended: z.coerce.boolean().optional(),
+    applied: z.coerce.boolean().optional(),
+    search: z.string().optional(),
+    page: z.coerce.number().int().min(1).default(1),
+    limit: z.coerce.number().int().min(1).max(50).default(20),
+});
+
+export const adminUpdateUserSchema = z
+    .object({
+        role: z.enum(['user', 'researcher', 'expert', 'admin']).optional(),
+        verified: z.boolean().optional(),
+        suspended: z.boolean().optional(),
+        appliedForResearcher: z.boolean().optional(),
+    })
+    .refine((data) => Object.keys(data).length > 0, {
+        message: 'Envia pelo menos um campo para atualizar',
+    });
