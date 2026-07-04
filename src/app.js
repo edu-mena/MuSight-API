@@ -2,7 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cors from 'cors';
-import cookieParser from 'cookie-parser'
+import cookieParser from 'cookie-parser';
 import authRouter from '#routes/auth.route.js';
 import { errorHandler } from '#middlewares/errorHandler.middleware.js';
 

@@ -31,7 +31,10 @@ export async function register(req, res, next) {
 export async function confirmEmail(req, res, next) {
     try {
         const user = await authService.confirmEmail(req.params.token);
-        res.status(200).json({ success: true, data: { user, message: 'Email confirmado com sucesso.' } });
+        res.status(200).json({
+            success: true,
+            data: { user, message: 'Email confirmado com sucesso.' },
+        });
     } catch (err) {
         handleControllerError(err, res, next);
     }
@@ -61,7 +64,10 @@ export async function resendConfirmation(req, res, next) {
         await authService.resendConfirmation(req.body);
         res.status(200).json({
             success: true,
-            data: { message: 'Se existir uma conta por confirmar com esse email, foi enviado um novo link.' },
+            data: {
+                message:
+                    'Se existir uma conta por confirmar com esse email, foi enviado um novo link.',
+            },
         });
     } catch (err) {
         handleControllerError(err, res, next);
@@ -82,7 +88,10 @@ export async function forgotPassword(req, res, next) {
         await authService.forgotPassword(req.body);
         res.status(200).json({
             success: true,
-            data: { message: 'Se existir uma conta com esse email, foi enviado um link de reposição de password.' },
+            data: {
+                message:
+                    'Se existir uma conta com esse email, foi enviado um link de reposição de password.',
+            },
         });
     } catch (err) {
         handleControllerError(err, res, next);

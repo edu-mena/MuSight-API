@@ -31,10 +31,7 @@ const logger = winston.createLogger({
 if (!isProduction) {
     logger.add(
         new winston.transports.Console({
-            format: winston.format.combine(
-                winston.format.colorize(),
-                winston.format.simple()
-            ),
+            format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
         })
     );
 }

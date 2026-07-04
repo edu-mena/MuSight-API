@@ -14,7 +14,11 @@ const router = Router();
 
 router.post('/register', validate(registerSchema), authController.register);
 router.get('/confirm/:token', authController.confirmEmail);
-router.post('/resend-confirmation', validate(resendConfirmationSchema), authController.resendConfirmation);
+router.post(
+    '/resend-confirmation',
+    validate(resendConfirmationSchema),
+    authController.resendConfirmation
+);
 router.post('/login', validate(loginSchema), authController.login);
 router.post('/logout', requireAuth, authController.logout);
 router.get('/me', requireAuth, authController.me);

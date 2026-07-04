@@ -6,7 +6,9 @@ export function requireAuth(req, res, next) {
     const token = bearerToken || req.cookies?.token;
 
     if (!token) {
-        return res.status(401).json({ success: false, error: 'Autenticação necessária', code: 401 });
+        return res
+            .status(401)
+            .json({ success: false, error: 'Autenticação necessária', code: 401 });
     }
 
     try {
@@ -14,6 +16,8 @@ export function requireAuth(req, res, next) {
         req.user = { id: payload.id, email: payload.email, role: payload.role };
         next();
     } catch {
-        return res.status(401).json({ success: false, error: 'Token inválido ou expirado', code: 401 });
+        return res
+            .status(401)
+            .json({ success: false, error: 'Token inválido ou expirado', code: 401 });
     }
 }
