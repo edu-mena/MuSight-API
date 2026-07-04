@@ -1,3 +1,4 @@
+console.log('[BOOT] logger.js início', Date.now());
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -36,4 +37,5 @@ if (!isProduction) {
     );
 }
 
+console.log('[BOOT] logger.js fim', Date.now());
 export default logger;

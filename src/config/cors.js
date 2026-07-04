@@ -1,3 +1,4 @@
+console.log('[BOOT] cors.js início', Date.now());
 const CORS_ORIGINS = process.env.CORS_ORIGINS;
 
 if (!CORS_ORIGINS) {
@@ -8,3 +9,5 @@ export const corsOptions = {
     origin: CORS_ORIGINS.split(',').map((origin) => origin.trim()),
     credentials: true,
 };
+
+console.log('[BOOT] cors.js fim', Date.now());

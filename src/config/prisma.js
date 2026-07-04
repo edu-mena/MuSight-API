@@ -1,3 +1,4 @@
+console.log('[BOOT] prisma.js início', Date.now());
 import { PrismaClient } from '@prisma/client';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
@@ -17,4 +18,5 @@ const adapter = new PrismaMariaDb({
 
 const prisma = new PrismaClient({ adapter });
 
+console.log('[BOOT] prisma.js fim', Date.now());
 export default prisma;

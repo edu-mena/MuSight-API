@@ -1,3 +1,4 @@
+console.log('[BOOT] app.js início', Date.now());
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
@@ -55,4 +56,5 @@ app.use((req, res) => {
 
 app.use(errorHandler);
 
+console.log('[BOOT] app.js fim', Date.now());
 export default app;

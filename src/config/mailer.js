@@ -1,3 +1,4 @@
+console.log('[BOOT] mailer.js início', Date.now());
 import nodemailer from 'nodemailer';
 import logger from './logger.js';
 
@@ -17,6 +18,8 @@ const transporter = nodemailer.createTransport({
         pass: GMAIL_APP_PASSWORD,
     },
 });
+
+console.log('[BOOT] mailer.js fim', Date.now());
 
 export async function sendMail({ to, subject, html }) {
     try {

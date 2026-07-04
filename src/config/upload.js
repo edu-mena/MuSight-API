@@ -1,3 +1,4 @@
+console.log('[BOOT] upload.js início', Date.now());
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -30,3 +31,5 @@ export const upload = multer({
     // silenciosamente no limite em vez de rejeitar com LIMIT_FILE_SIZE.
     limits: { fileSize: Math.floor(UPLOAD_MAX_SIZE_MB * 1024 * 1024) },
 });
+
+console.log('[BOOT] upload.js fim', Date.now());

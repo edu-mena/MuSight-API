@@ -1,3 +1,4 @@
+console.log('[BOOT] jwt.js início', Date.now());
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -22,3 +23,5 @@ export function verifyToken(token) {
 export function decodeToken(token) {
     return jwt.decode(token);
 }
+
+console.log('[BOOT] jwt.js fim', Date.now());
