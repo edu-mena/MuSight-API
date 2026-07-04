@@ -1,4 +1,6 @@
 console.log('[BOOT] app.js início', Date.now());
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
@@ -18,6 +20,7 @@ import wezaRouter from '#routes/weza.route.js';
 import { errorHandler } from '#middlewares/errorHandler.middleware.js';
 import { corsOptions } from '#config/cors.js';
 
+const traceFile = path.join(os.tmpdir(), 'boot-trace.log');
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadsDir = path.join(__dirname, '..', 'uploads');
 
@@ -56,5 +59,7 @@ app.use((req, res) => {
 
 app.use(errorHandler);
 
-console.log('[BOOT] app.js fim', Date.now());
+const mb = Math.round(process.memoryUsage().rss / 1024 / 1024);
+fs.writeFileSync(traceFile, `app.js fim | rss=${mb}MB | ${Date.now()}\n`, { flag: 'a' });
+console.log('[BOOT] app.js fim', Date.now(), `rss=${mb}MB`);
 export default app;

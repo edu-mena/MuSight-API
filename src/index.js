@@ -3,7 +3,10 @@ import os from 'node:os';
 import path from 'node:path';
 
 const traceFile = path.join(os.tmpdir(), 'boot-trace.log');
-const trace = (msg) => fs.writeFileSync(traceFile, `${msg} ${Date.now()}\n`, { flag: 'a' });
+const trace = (msg) => {
+    const mb = Math.round(process.memoryUsage().rss / 1024 / 1024);
+    fs.writeFileSync(traceFile, `${msg} | rss=${mb}MB | ${Date.now()}\n`, { flag: 'a' });
+};
 
 trace('index.js início');
 console.log('[BOOT] index.js início', Date.now());
