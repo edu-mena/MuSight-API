@@ -1,10 +1,11 @@
 import express from 'express';
+import cors from 'cors';
 import { corsOptions } from '#config/cors.js';
 
 console.log('[BOOT] início', Date.now());
 
 const app = express();
-app.use((await import('cors')).default(corsOptions));
+app.use(cors(corsOptions));
 
 app.get('/', (req, res) => res.send('ok'));
 

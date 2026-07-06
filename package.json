@@ -2,7 +2,7 @@
     "name": "musight-api",
     "version": "1.0.0",
     "description": "",
-    "main": "app.js",
+    "main": "./src/index.js",
     "imports": {
         "#config/*": "./src/config/*",
         "#controllers/*": "./src/controllers/*",
