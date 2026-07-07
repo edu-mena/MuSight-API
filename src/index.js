@@ -1,39 +1,12 @@
-console.log('[BOOT] ENV CHECK:', {
-    NODE_ENV: process.env.NODE_ENV,
-    PORT: process.env.PORT,
-    CORS_ORIGINS: process.env.CORS_ORIGINS,
-    GMAIL_USER: process.env.GMAIL_USER,
-    DATABASE_URL: process.env.DATABASE_URL ? '[definida]' : undefined,
-    JWT_SECRET: process.env.JWT_SECRET ? '[definida]' : undefined,
-});
-
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
-import http from 'node:http';
-
-const traceFile = path.join(os.tmpdir(), 'boot-trace.log');
-const trace = (msg) => fs.writeFileSync(traceFile, `${msg} ${Date.now()}\n`, { flag: 'a' });
+// src/index.js
+import app from './app.js';
 
 const PORT = process.env.PORT || 3000;
 
-const server = http.createServer((req, res) => {
-    res.end('ok');
+console.log('[BOOT] prestes a chamar listen()', Date.now());
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log('[BOOT] LISTENING na porta', PORT, Date.now());
+}).on('error', (err) => {
+    console.error('[BOOT] LISTEN ERROR:', err.stack || err.message);
 });
-
-server.on('error', (err) => {
-    trace(`LISTEN ERROR: ${err.stack || err.message}`);
-});
-
-trace('prestes a chamar listen()');
-try {
-    server.listen(PORT, '0.0.0.0', () => {
-        trace('LISTEN CALLBACK OK');
-        console.log('listening', PORT);
-    });
-    trace('listen() chamado sem exceção síncrona');
-} catch (err) {
-    trace(`LISTEN THROW SÍNCRONO: ${err.stack || err.message}`);
-}
-
-export default server;
