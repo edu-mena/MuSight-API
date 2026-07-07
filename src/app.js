@@ -1,3 +1,28 @@
+import express from 'express';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+
+import authRouter from '#routes/auth.route.js';
+console.log('[BOOT] authRouter OK', Date.now());
+import userRouter from '#routes/user.route.js';
+console.log('[BOOT] userRouter OK', Date.now());
+import articleRouter from '#routes/article.route.js';
+console.log('[BOOT] articleRouter OK', Date.now());
+import researcherArticleRouter from '#routes/researcherArticle.route.js';
+console.log('[BOOT] researcherArticleRouter OK', Date.now());
+import debateRouter from '#routes/debate.route.js';
+console.log('[BOOT] debateRouter OK', Date.now());
+import researcherDebateRouter from '#routes/researcherDebate.route.js';
+console.log('[BOOT] researcherDebateRouter OK', Date.now());
+import commentRouter from '#routes/comment.route.js';
+console.log('[BOOT] commentRouter OK', Date.now());
+import adminRouter from '#routes/admin.route.js';
+console.log('[BOOT] adminRouter OK', Date.now());
+import wezaRouter from '#routes/weza.route.js';
 console.log('[BOOT] wezaRouter OK', Date.now());
 
 import { errorHandler } from '#middlewares/errorHandler.middleware.js';
