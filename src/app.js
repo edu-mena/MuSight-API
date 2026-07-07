@@ -51,4 +51,19 @@ app.use(
 
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
-app.use('/articles',
+app.use('/articles', articleRouter);
+app.use('/researcher/articles', researcherArticleRouter);
+app.use('/debates', debateRouter);
+app.use('/researcher/debates', researcherDebateRouter);
+app.use('/comments', commentRouter);
+app.use('/admin', adminRouter);
+app.use('/weza', wezaRouter);
+
+app.use((req, res) => {
+    res.status(404).json({ success: false, error: 'Rota não encontrada', code: 404 });
+});
+
+app.use(errorHandler);
+
+console.log('[BOOT] app.js fim', Date.now());
+export default app;
