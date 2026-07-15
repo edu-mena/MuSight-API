@@ -14,6 +14,8 @@ const adapter = new PrismaMariaDb({
     user: decodeURIComponent(username),
     password: decodeURIComponent(password),
     database: pathname.replace(/^\//, ''),
+    connectionLimit: 3,     // reduz de 10 (default) para algo compatível com plano compartilhado
+    connectTimeout: 10000,  // timeout explícito de conexão em ms
 });
 
 const prisma = new PrismaClient({ adapter });
