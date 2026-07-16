@@ -38,7 +38,7 @@ function verifyPurposeToken(token, expectedPurpose) {
 
 async function sendConfirmationEmail(user) {
     const confirmationToken = signToken({ id: user.id, purpose: 'email_verification' }, '1h');
-    const confirmationLink = `${process.env.FRONTEND_URL}/confirm-email?token=${confirmationToken}`;
+    const confirmationLink = `${process.env.FRONTEND_URL}/auth/confirm-email?token=${confirmationToken}`;
 
     await sendMail({
         to: user.email,
@@ -139,7 +139,7 @@ async function sendConfirmationEmail(user) {
 
 async function sendPasswordResetEmail(user) {
     const resetToken = signToken({ id: user.id, purpose: 'password_reset' }, '30m');
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_URL}/auth/reset-password?token=${resetToken}`;
 
     await sendMail({
         to: user.email,
