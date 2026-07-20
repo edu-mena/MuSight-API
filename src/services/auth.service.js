@@ -3,8 +3,10 @@ import prisma from '#config/prisma.js';
 import { signToken, verifyToken } from '#config/jwt.js';
 import { sendMail } from '#config/mailer.js';
 import { toSafeUser } from '#utils/serializeUser.js';
+import { OAuth2Client } from 'google-auth-library';
 
 const SALT_ROUNDS = 12;
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export function hashPassword(plain) {
     return bcrypt.hash(plain, SALT_ROUNDS);
@@ -304,6 +306,63 @@ export async function resetPassword({ token, password }) {
     });
 }
 
+export async function loginWithGoogle({ credential }) {
+    let payload;
+
+    try {
+        const ticket = await googleClient.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        payload = ticket.getPayload();
+    } catch {
+        throw businessError('Token do Google inválido', 401);
+    }
+
+    if (!payload.email_verified) {
+        throw businessError('Email da conta Google não está verificado', 403);
+    }
+
+    let user = await prisma.user.findUnique({ where: { email: payload.email } });
+
+    if (user) {
+        // conta já existia (ex: registo por password) — associa a conta Google
+        if (!user.googleId) {
+            user = await prisma.user.update({
+                where: { id: user.id },
+                data: { googleId: payload.sub, verified: true },
+            });
+        }
+    } else {
+        try {
+            user = await prisma.user.create({
+                data: {
+                    name: payload.name,
+                    email: payload.email,
+                    googleId: payload.sub,
+                    verified: true,
+                },
+            });
+        } catch (err) {
+            if (err.code === 'P2002') {
+                // duplo clique / pedido concorrente já criou a conta entretanto
+                user = await prisma.user.findUnique({ where: { email: payload.email } });
+            } else {
+                throw err;
+            }
+        }
+    }
+
+    if (user.suspended) {
+        throw businessError('Conta suspensa', 403);
+    }
+
+    const token = signToken({ id: user.id, email: user.email, role: user.role });
+
+    return { token, user: toSafeUser(user) };
+}
+
+
 export async function login({ email, password }) {
     const user = await prisma.user.findUnique({ where: { email } });
 
@@ -311,12 +370,16 @@ export async function login({ email, password }) {
         throw businessError('Credenciais inválidas', 401);
     }
 
+    if (!user.passwordHash) {
+        throw businessError('Esta conta usa login com Google. Inicia sessão com o Google.', 400);
+    }
+
     const passwordMatches = await comparePassword(password, user.passwordHash);
 
     if (!passwordMatches) {
         throw businessError('Credenciais inválidas', 401);
     }
-
+    
     if (!user.verified) {
         throw businessError('Email ainda não confirmado', 403);
     }
@@ -325,3 +388,5 @@ export async function login({ email, password }) {
 
     return { token, user: toSafeUser(user) };
 }
+
+

@@ -34,6 +34,7 @@ const uploadsDir = path.join(__dirname, '..', 'uploads');
 console.log('[BOOT] uploadsDir resolvido:', uploadsDir, Date.now());
 
 const app = express();
+app.set('trust proxy', 1); 
 console.log('[BOOT] express() OK', Date.now());
 
 app.use(helmet());

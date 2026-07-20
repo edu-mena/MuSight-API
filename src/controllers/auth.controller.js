@@ -50,6 +50,16 @@ export async function login(req, res, next) {
     }
 }
 
+export async function googleLogin(req, res, next) {
+    try {
+        const { token, user } = await authService.loginWithGoogle(req.body);
+        res.cookie('token', token, cookieOptions(token));
+        res.status(200).json({ success: true, data: { token, user } });
+    } catch (err) {
+        handleControllerError(err, res, next);
+    }
+}
+
 export async function logout(req, res, next) {
     try {
         res.clearCookie('token');
